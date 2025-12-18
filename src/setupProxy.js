@@ -4,10 +4,10 @@ module.exports = function (app) {
   app.use(
     "/jsonApi",
     createProxyMiddleware({
-      target: "http://localhost:3001",
+      target: "https://jsonplaceholder.typicode.com",
       changeOrigin: true,
       pathRewrite: {
-        "^/jsonApi": "https://jsonplaceholder.typicode.com/", // 可选：移除/api前缀
+        "^/jsonApi": "/", // 可选：移除前缀
       },
     })
   );
