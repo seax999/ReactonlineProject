@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 
-function CommonLayout() {
+const CommonLayout = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(true);
 
