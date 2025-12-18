@@ -1,72 +1,70 @@
 import React, { useState } from 'react';
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Link } from 'react-router-dom';
+import { routes } from '../../router';
+import { Layout, Menu } from 'antd';
+import { useLocation } from 'react-router-dom';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider } = Layout;
 
-type MenuItem = Required<MenuProps>['items'][number];
+function CommonLayout() {
+  const location = useLocation();
+  const [collapsed, setCollapsed] = useState(true);
 
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
+  const items = routes.map(route => {
+    if (route.children) {
+      return {
+        label: route.title,
+        key: route.path,
+        icon: <route.icon />,
+        children: route.children.map(child => {
+          return {
+            label: <Link to={child.path}>{child.title}</Link>,
+            key: child.path,
+          }
+        })
+      }
+    }
+    return {
+      label: <Link to={route.path}>{route.title}</Link>,
+      key: route.path,
+      icon: <route.icon />,
+    }
+  })
 
-const items: MenuItem[] = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
-  ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileOutlined />),
-];
+  // 获取当前应该选中的菜单项key
+  const getSelectedKeys = () => {
+    const currentPath = location.pathname;
+    const selectedKeys = [];
 
-const CommonLayout: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+    // 查找匹配的路由
+    for (const route of routes) {
+      if (route.children) {
+        for (const child of route.children) {
+          if (currentPath === child.path) {
+            selectedKeys.push(child.path);
+            return selectedKeys;
+          }
+        }
+      } else {
+        // 精确匹配或前缀匹配
+        if (currentPath === route.path ||
+          (route.exact !== true && currentPath.startsWith(route.path))) {
+          selectedKeys.push(route.path);
+          return selectedKeys;
+        }
+      }
+    }
+
+    // 如果没有找到匹配项，默认第一个
+    selectedKeys.push(items[0].key);
+    return selectedKeys;
+  };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
-      </Sider>
-      <Layout>
-        <Content style={{ margin: '0 16px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }} items={[{ title: 'User' }, { title: 'Bill' }]} />
-          <div
-            style={{
-              padding: 24,
-              minHeight: 360,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            Bill is a cat.
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
+    <Sider theme="light" collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} width={165}>
+      <Menu selectedKeys={getSelectedKeys()} mode="inline" items={items} />
+    </Sider>
   );
-};
+}
 
 export default CommonLayout;

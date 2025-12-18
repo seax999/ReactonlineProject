@@ -7,18 +7,18 @@ export const routes = [
     path: "/",
     component: lazy(() => import("./pages/Home")),
     exact: true,
-    icon: HomeOutlined, // 添加图标
+    icon: HomeOutlined,
     title: "首页",
   },
   {
     path: "/about",
     component: lazy(() => import("./pages/About")),
-    icon: InfoCircleOutlined, // 添加图标
+    icon: InfoCircleOutlined,
     title: "关于",
   },
   {
     path: "/utilTools",
-    icon: ToolOutlined, // 添加图标
+    icon: ToolOutlined,
     title: "工具",
     children: [
       {
