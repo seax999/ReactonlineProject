@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/jsonApi/(.*)",
+      "destination": "https://jsonplaceholder.typicode.com/$1"
+    }
+  ],
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "react-scripts build",
   "outputDirectory": "build"
